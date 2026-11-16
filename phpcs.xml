@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<ruleset name="Hexlet Project">
+    <description>PHP coding standards</description>
+
+    <file>public</file>
+
+    <arg name="colors"/>
+    <arg value="p"/>
+
+    <rule ref="PSR12"/>
+</ruleset>
