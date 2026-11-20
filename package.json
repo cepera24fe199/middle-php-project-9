@@ -1,0 +1,21 @@
+{
+  "name": "middle-php-project-9",
+  "version": "1.0.0",
+  "description": "[![hexlet-check](https://github.com/cepera24fe199/middle-php-project-9/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/cepera24fe199/middle-php-project-9/actions)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "tailwindcss --input assets/css/source.css --output public/assets/css/main.css --minify"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "allowScripts": {
+    "@parcel/watcher": false
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.5",
+    "@tailwindcss/forms": "^0.5.11",
+    "tailwindcss": "^4.3.5"
+  }
+}

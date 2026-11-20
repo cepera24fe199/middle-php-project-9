@@ -1,11 +1,17 @@
 PORT ?= 8000
 
-setup: install
+.PHONY: setup install build build-css lint start
+
+setup: build-css
+
+build: build-css
 
 install:
 	composer install
+	npm ci
 
-build: install
+build-css: install
+	npm run build:css
 
 lint:
 	./vendor/bin/phpcs
