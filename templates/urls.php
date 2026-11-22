@@ -6,8 +6,8 @@
                 <th scope="col" class="p-3"><?= htmlspecialchars($translations['id']) ?></th>
                 <th scope="col" class="p-3"><?= htmlspecialchars($translations['name']) ?></th>
                 <th scope="col" class="p-3"><?= htmlspecialchars($translations['created_at']) ?></th>
-                <th scope="col" class="p-3"><?= htmlspecialchars($translations['last_check_at']) ?></th>
                 <th scope="col" class="p-3"><?= htmlspecialchars($translations['status_code']) ?></th>
+                <th scope="col" class="p-3"><?= htmlspecialchars($translations['last_check_at']) ?></th>
             </tr>
         </thead>
         <tbody>
@@ -19,8 +19,8 @@
                            class="text-blue-700 underline"><?= htmlspecialchars($url['name']) ?></a>
                     </td>
                     <td class="whitespace-nowrap p-3"><?= htmlspecialchars($url['created_at']) ?></td>
-                    <td class="whitespace-nowrap p-3"><?= htmlspecialchars($url['last_check_at'] ?? '') ?></td>
                     <td class="p-3"><?= htmlspecialchars((string) ($url['last_check_status_code'] ?? '')) ?></td>
+                    <td class="whitespace-nowrap p-3"><?= htmlspecialchars($url['last_check_at'] ?? '') ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

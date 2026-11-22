@@ -92,8 +92,8 @@ class UrlsTest extends DatabaseTestCase
         $row = $document->querySelector("table[data-test=urls] tr:has(a[href='/urls/{$id}'])");
         self::assertNotNull($row);
         self::assertSame('https://feature.example', trim($row->querySelector('a')->textContent));
-        self::assertSame('2000-01-03 12:00:00', trim($row->querySelector('td:nth-child(4)')->textContent));
-        self::assertSame('204', trim($row->querySelector('td:nth-child(5)')->textContent));
+        self::assertSame('204', trim($row->querySelector('td:nth-child(4)')->textContent));
+        self::assertSame('2000-01-03 12:00:00', trim($row->querySelector('td:nth-child(5)')->textContent));
     }
 
     public function testCheckRedirectsAndShowsFailureThenSuccess(): void
