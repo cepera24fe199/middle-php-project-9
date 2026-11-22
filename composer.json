@@ -14,7 +14,6 @@
         "ext-dom": "*",
         "ext-libxml": "*",
         "ext-pdo": "*",
-        "ext-pdo_mysql": "*",
         "ext-session": "*",
         "psr/http-message": "^2.0",
         "slim/slim": "^4.0",
@@ -22,6 +21,10 @@
         "slim/php-view": "^3.4",
         "nesbot/carbon": "^3",
         "guzzlehttp/guzzle": "^7.0"
+    },
+    "suggest": {
+        "ext-pdo_mysql": "Required when using MySQL.",
+        "ext-pdo_pgsql": "Required when using PostgreSQL."
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^4.0",

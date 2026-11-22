@@ -12,12 +12,17 @@ class UrlRepository
 
     public function insert(string $name, string $createdAt): ?int
     {
-        $statement = $this->database->prepare(
-            'INSERT INTO urls (name, created_at) VALUES (:name, :created_at)
-             ON DUPLICATE KEY UPDATE id = id'
-        );
+        $isPostgres = $this->database->getAttribute(PDO::ATTR_DRIVER_NAME) === 'pgsql';
+        $sql = 'INSERT INTO urls (name, created_at) VALUES (:name, :created_at)';
+        $sql .= $isPostgres ? ' ON CONFLICT (name) DO NOTHING RETURNING id' : ' ON DUPLICATE KEY UPDATE id = id';
+        $statement = $this->database->prepare($sql);
 
         $statement->execute(['name' => $name, 'created_at' => $createdAt]);
+
+        if ($isPostgres) {
+            $id = $statement->fetchColumn();
+            return $id === false ? null : (int) $id;
+        }
 
         return $statement->rowCount() === 1 ? (int) $this->database->lastInsertId() : null;
     }
@@ -66,9 +71,12 @@ class UrlRepository
         ?string $title = null,
         ?string $description = null,
     ): bool {
+        $checkValues = $this->database->getAttribute(PDO::ATTR_DRIVER_NAME) === 'pgsql'
+            ? 'CAST(:status_code AS INTEGER), CAST(:created_at AS TIMESTAMP)'
+            : ':status_code, :created_at';
         $statement = $this->database->prepare(
             'INSERT INTO url_checks (url_id, status_code, created_at, h1, title, description)
-             SELECT id, :status_code, :created_at, :h1, :title, :description FROM urls WHERE id = :url_id'
+             SELECT id, ' . $checkValues . ', :h1, :title, :description FROM urls WHERE id = :url_id'
         );
         $statement->execute([
             'url_id' => $urlId,

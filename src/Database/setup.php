@@ -6,13 +6,20 @@ use function Hexlet\Code\Database\connectDatabase;
 
 require __DIR__ . '/../../vendor/autoload.php';
 
-$schema = file_get_contents(__DIR__ . '/database.sql');
+$database = connectDatabase();
+$isPostgres = $database->getAttribute(PDO::ATTR_DRIVER_NAME) === 'pgsql';
+$schemaPath = $isPostgres ? __DIR__ . '/../../database.sql' : __DIR__ . '/database.sql';
+$schema = file_get_contents($schemaPath);
 
 if ($schema === false) {
     throw new RuntimeException((new TechnicalMessages())->forLocale()['database_schema_unreadable']);
 }
 
-$database = connectDatabase();
+if ($isPostgres) {
+    $database->exec($schema);
+    return;
+}
+
 foreach (explode(';', trim($schema, " \n\r\t;")) as $statement) {
     $database->exec($statement);
 }
