@@ -6,6 +6,7 @@
 
 Учебный проект Хекслета: https://ru.hexlet.io/programs/middle-php
 Как это должно работать: https://files.hexlet.app/a/tefi04
+Ссылка на рабочую версию: https://cepera24fe199-middle-php-project-9-686d.twc1.net/
 
 ## Стек
 
