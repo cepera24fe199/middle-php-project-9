@@ -45,7 +45,6 @@ return function (?Closure $createRepository = null, ?ClientInterface $client = n
                 'max' => 5,
                 'protocols' => ['http', 'https'],
             ],
-            'http_errors' => false,
         ]),
     );
 

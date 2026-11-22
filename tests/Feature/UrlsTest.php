@@ -28,6 +28,7 @@ class UrlsTest extends DatabaseTestCase
         $createApp = require __DIR__ . '/../../src/createApp.php';
         $handler = new MockHandler([
             new ConnectException('Connection failed', new Request('GET', 'https://feature.example')),
+            new Response(503, [], '<h1>Service unavailable</h1>'),
             new Response(203, [], '<title>Checked example</title>'),
         ]);
         $this->app = $createApp(
@@ -101,14 +102,17 @@ class UrlsTest extends DatabaseTestCase
         $id = $this->repository->insert('https://feature.example', '2000-01-01 12:00:00');
         $path = "/urls/{$id}";
 
-        $failed = $this->request('POST', "{$path}/checks");
-        self::assertSame(302, $failed->getStatusCode());
-        self::assertSame($path, $failed->getHeaderLine('Location'));
-        self::assertSame([], $this->repository->findChecksByUrlId($id));
-        self::assertStringContainsString(
-            'Произошла ошибка при проверке',
-            (string) $this->request('GET', $path)->getBody(),
-        );
+        foreach (['connection failure', 'HTTP 503'] as $failure) {
+            $failed = $this->request('POST', "{$path}/checks");
+            self::assertSame(302, $failed->getStatusCode(), $failure);
+            self::assertSame($path, $failed->getHeaderLine('Location'), $failure);
+            self::assertSame([], $this->repository->findChecksByUrlId($id), $failure);
+            self::assertStringContainsString(
+                'Произошла ошибка при проверке',
+                (string) $this->request('GET', $path)->getBody(),
+                $failure,
+            );
+        }
 
         $success = $this->request('POST', "{$path}/checks");
         self::assertSame(302, $success->getStatusCode());
