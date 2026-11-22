@@ -5,8 +5,23 @@ on:
   pull_request:
 
 jobs:
-  lint:
+  checks:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+          MYSQL_DATABASE: page_analyzer_test
+          MYSQL_USER: page_analyzer_test
+          MYSQL_PASSWORD: ci_test_only
+        ports:
+          - 13306:3306
+        options: >-
+          --health-cmd="mysql --protocol=TCP -h 127.0.0.1 -u page_analyzer_test -pci_test_only page_analyzer_test -e 'SELECT 1'"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
 
     steps:
       - name: Checkout repository
@@ -17,9 +32,17 @@ jobs:
         with:
           php-version: '8.4'
           tools: composer:v2
+          extensions: pdo_mysql
 
       - name: Install dependencies
-        run: make setup
+        run: make build
 
       - name: Run PHP_CodeSniffer
         run: make lint
+
+      - name: Run PHPUnit
+        env:
+          TEST_DB_DSN: mysql:host=127.0.0.1;port=13306;dbname=page_analyzer_test;charset=utf8mb4
+          TEST_DB_USER: page_analyzer_test
+          TEST_DB_PASSWORD: ci_test_only
+        run: make test

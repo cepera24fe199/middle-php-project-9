@@ -3,3 +3,4 @@
 /.idea/
 node_modules/
 public/assets/css/main.css
+/.phpunit.result.cache

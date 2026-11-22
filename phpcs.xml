@@ -3,6 +3,8 @@
     <description>PHP coding standards</description>
 
     <file>public</file>
+    <file>src</file>
+    <file>tests</file>
 
     <arg name="colors"/>
     <arg value="p"/>

@@ -1,11 +1,30 @@
 {
     "name": "hexlet/code",
+    "autoload": {
+        "psr-4": {
+            "Hexlet\\Code\\": "src/"
+        },
+        "files": [
+            "src/environment.php",
+            "src/Database/database.php"
+        ]
+    },
     "require": {
+        "php": "^8.4",
+        "ext-dom": "*",
+        "ext-libxml": "*",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
+        "ext-session": "*",
+        "psr/http-message": "^2.0",
         "slim/slim": "^4.0",
         "slim/psr7": "^1.8",
-        "slim/php-view": "^3.4"
+        "slim/php-view": "^3.4",
+        "nesbot/carbon": "^3",
+        "guzzlehttp/guzzle": "^7.0"
     },
     "require-dev": {
-        "squizlabs/php_codesniffer": "^4.0"
+        "squizlabs/php_codesniffer": "^4.0",
+        "phpunit/phpunit": "^12.5"
     }
 }

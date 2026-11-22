@@ -1,8 +1,9 @@
 PORT ?= 8000
 
-.PHONY: setup install build build-css lint start
+.PHONY: setup install build build-css db-setup lint start test
 
 setup: build-css
+	$(MAKE) db-setup
 
 build: build-css
 
@@ -16,5 +17,11 @@ build-css: install
 lint:
 	./vendor/bin/phpcs
 
-start:
+db-setup:
+	php src/Database/setup.php
+
+start: db-setup
 	PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:$(PORT) -t public
+
+test:
+	./vendor/bin/phpunit
