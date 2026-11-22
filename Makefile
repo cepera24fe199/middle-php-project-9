@@ -20,7 +20,7 @@ lint:
 db-setup:
 	php src/Database/setup.php
 
-start: db-setup
+start:
 	PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:$(PORT) -t public
 
 test:
