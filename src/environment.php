@@ -10,13 +10,9 @@ function getEnvironmentValue(string $name): ?string
         return $value;
     }
 
+    static $settings = null;
     $envFile = __DIR__ . '/../.env';
-
-    if (!is_file($envFile)) {
-        return null;
-    }
-
-    $settings = parse_ini_file($envFile, false, INI_SCANNER_RAW);
+    $settings ??= is_file($envFile) ? parse_ini_file($envFile, false, INI_SCANNER_RAW) : [];
 
     if ($settings === false) {
         throw new RuntimeException((new TechnicalMessages())->forLocale()['environment_unreadable']);

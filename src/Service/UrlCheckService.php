@@ -5,12 +5,12 @@ namespace Hexlet\Code\Service;
 use Carbon\CarbonImmutable;
 use Dom\HTMLDocument;
 use GuzzleHttp\ClientInterface;
-use Hexlet\Code\Database\UrlRepository;
+use Hexlet\Code\Database\UrlRepositoryInterface;
 
 class UrlCheckService
 {
     public function __construct(
-        private readonly UrlRepository $repository,
+        private readonly UrlRepositoryInterface $repository,
         private readonly ClientInterface $client,
     ) {
     }

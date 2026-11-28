@@ -4,7 +4,7 @@ namespace Hexlet\Code\Database;
 
 use PDO;
 
-class UrlRepository
+class UrlRepository implements UrlRepositoryInterface
 {
     public function __construct(private readonly PDO $database)
     {
@@ -38,19 +38,27 @@ class UrlRepository
 
     public function findAll(): array
     {
-        $statement = $this->database->prepare(
-            'SELECT urls.id, urls.name, urls.created_at,
-                last_check.created_at AS last_check_at, last_check.status_code AS last_check_status_code
-             FROM urls
-             LEFT JOIN url_checks AS last_check ON last_check.id = (
-                 SELECT checks.id FROM url_checks AS checks
-                 WHERE checks.url_id = urls.id ORDER BY checks.created_at DESC, checks.id DESC LIMIT 1
-             )
-             ORDER BY urls.created_at DESC, urls.id DESC'
-        );
-        $statement->execute();
+        $urls = $this->database->query(
+            'SELECT id, name, created_at FROM urls ORDER BY created_at DESC, id DESC'
+        )->fetchAll();
+        $latestChecks = $this->database->query(
+            'SELECT url_id, created_at, status_code
+             FROM (
+                 SELECT url_id, created_at, status_code,
+                     ROW_NUMBER() OVER (PARTITION BY url_id ORDER BY created_at DESC, id DESC) AS check_rank
+                 FROM url_checks
+             ) AS ranked_checks
+             WHERE check_rank = 1'
+        )->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
 
-        return $statement->fetchAll();
+        return array_map(static function (array $url) use ($latestChecks): array {
+            $check = $latestChecks[$url['id']] ?? [];
+
+            return $url + [
+                'last_check_at' => $check['created_at'] ?? null,
+                'last_check_status_code' => $check['status_code'] ?? null,
+            ];
+        }, $urls);
     }
 
     public function findById(int $id): ?array

@@ -3,8 +3,8 @@
 namespace Hexlet\Code;
 
 use Closure;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use Hexlet\Code\Database\UrlRepositoryInterface;
 use Hexlet\Code\Request\ShowUrlRequest;
 use Hexlet\Code\Request\StoreUrlRequest;
 use Hexlet\Code\Service\UrlCheckService;
@@ -17,13 +17,15 @@ use Slim\Views\PhpRenderer;
 
 class PageController
 {
+    /** @param Closure(): UrlCheckService $createCheckService */
     public function __construct(
         private readonly PhpRenderer $renderer,
         private readonly RouteParserInterface $routes,
         private readonly array $translations,
         private readonly array $technicalMessages,
-        private readonly Closure $createRepository,
-        private readonly ClientInterface $client,
+        private readonly UrlRepositoryInterface $repository,
+        private readonly UrlService $urlService,
+        private readonly Closure $createCheckService,
     ) {
     }
 
@@ -43,8 +45,7 @@ class PageController
             ]);
         }
 
-        $service = new UrlService(($this->createRepository)());
-        $result = $service->add($urlRequest->value, $this->technicalMessages['existing_url_missing']);
+        $result = $this->urlService->add($urlRequest->value, $this->technicalMessages['existing_url_missing']);
         $flash = $result['added'] ? 'url_added' : 'url_exists';
         $_SESSION['flashMessages'][] = [
             'type' => $result['added'] ? 'success' : 'info',
@@ -56,16 +57,13 @@ class PageController
 
     public function listUrls(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $repository = ($this->createRepository)();
-
-        return $this->renderer->render($response, 'urls.php', ['urls' => $repository->findAll()]);
+        return $this->renderer->render($response, 'urls.php', ['urls' => $this->repository->findAll()]);
     }
 
     public function showUrl(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $urlRequest = new ShowUrlRequest($request);
-        $repository = ($this->createRepository)();
-        $url = $repository->findById($urlRequest->id);
+        $url = $this->repository->findById($urlRequest->id);
 
         if ($url === null) {
             throw new HttpNotFoundException($request);
@@ -76,7 +74,7 @@ class PageController
 
         return $this->renderer->render($response, 'url.php', [
             'url' => $url,
-            'checks' => $repository->findChecksByUrlId($urlRequest->id),
+            'checks' => $this->repository->findChecksByUrlId($urlRequest->id),
             'flashMessages' => $flashMessages,
         ]);
     }
@@ -84,7 +82,7 @@ class PageController
     public function checkUrl(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $urlRequest = new ShowUrlRequest($request);
-        $service = new UrlCheckService(($this->createRepository)(), $this->client);
+        $service = ($this->createCheckService)();
 
         try {
             $saved = $service->check($urlRequest->id);

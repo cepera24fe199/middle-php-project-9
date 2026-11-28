@@ -3,12 +3,12 @@
 namespace Hexlet\Code\Service;
 
 use Carbon\CarbonImmutable;
-use Hexlet\Code\Database\UrlRepository;
+use Hexlet\Code\Database\UrlRepositoryInterface;
 use RuntimeException;
 
 class UrlService
 {
-    public function __construct(private readonly UrlRepository $repository)
+    public function __construct(private readonly UrlRepositoryInterface $repository)
     {
     }
 

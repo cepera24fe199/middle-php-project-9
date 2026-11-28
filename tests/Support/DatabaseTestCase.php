@@ -27,9 +27,8 @@ abstract class DatabaseTestCase extends TestCase
         self::assertStringEndsWith('_test', $schema);
 
         $sql = file_get_contents(__DIR__ . '/../../src/Database/database.sql');
-        foreach (explode(';', trim($sql, " \n\r\t;")) as $statement) {
-            $this->database->exec($statement);
-        }
+        self::assertIsString($sql);
+        $this->database->exec($sql);
 
         $this->database->beginTransaction();
         $this->repository = new UrlRepository($this->database);
